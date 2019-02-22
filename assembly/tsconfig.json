@@ -1,0 +1,6 @@
+{
+  "extends": "../lib/typescript_contract_sdk/assembly/tsconfig.json",
+  "include": [
+    "./**/*.ts"
+  ]
+}

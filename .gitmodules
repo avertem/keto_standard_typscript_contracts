@@ -1,0 +1,6 @@
+[submodule "lib/typescript_contract_sdk"]
+	path = lib/typescript_contract_sdk
+	url = https://github.com/burntjam/typescript_contract_sdk.git
+[submodule "lib/assemblyscript"]
+	path = lib/assemblyscript
+	url = https://github.com/AssemblyScript/assemblyscript.git

@@ -1,10 +1,13 @@
 {
   "scripts": {
-    "asbuild:untouched": "asc assembly/index.ts -b build/untouched.wasm -t build/untouched.wat --sourceMap --validate",
-    "asbuild:optimized": "asc assembly/index.ts -b build/optimized.wasm -t build/optimized.wat --sourceMap --validate --optimize --noDebug",
-    "asbuild": "npm run asbuild:untouched && npm run asbuild:optimized"
+    "asbuild:untouched": "asc assembly/base.ts -b build/base_untouched.wasm -t build/base_untouched.wat --sourceMap --validate --lib ./lib/typescript_contract_sdk/assembly/keto_env.ts -u abort=~lib/keto_env/keto.abort",
+    "asbuild:optimized": "asc assembly/base.ts -b build/base_optimized.wasm -t build/base_optimized.wat --sourceMap --validate --optimize --lib ./lib/typescript_contract_sdk/assembly/keto_env.ts -u abort=~lib/keto_env/keto.abort",
+    "asbuild:fee_untouched": "asc assembly/fee.ts -b build/fee_untouched.wasm -t build/fee_untouched.wat --sourceMap --validate --lib ./lib/typescript_contract_sdk/assembly/keto_env.ts -u abort=~lib/keto_env/keto.abort",
+    "asbuild:fee_optimized": "asc assembly/fee.ts -b build/fee_optimized.wasm -t build/fee_optimized.wat --sourceMap --validate --optimize --lib ./lib/typescript_contract_sdk/assembly/keto_env.ts -u abort=~lib/keto_env/keto.abort",
+    "asbuild": "npm run asbuild:untouched && npm run asbuild:optimized && npm run asbuild:fee_untouched && npm run asbuild:fee_optimized"
   },
   "dependencies": {
-    "assemblyscript": "github:AssemblyScript/assemblyscript"
+    "assemblyscript": "github:AssemblyScript/assemblyscript",
+    "rxjs": "^6.4.0"
   }
 }
