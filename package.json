@@ -4,7 +4,9 @@
     "asbuild:optimized": "asc assembly/base.ts -b build/base_optimized.wasm -t build/base_optimized.wat --sourceMap --validate --optimize --lib ./lib/typescript_contract_sdk/assembly/keto_env.ts -u abort=~lib/keto_env/keto.abort",
     "asbuild:fee_untouched": "asc assembly/fee.ts -b build/fee_untouched.wasm -t build/fee_untouched.wat --sourceMap --validate --lib ./lib/typescript_contract_sdk/assembly/keto_env.ts -u abort=~lib/keto_env/keto.abort",
     "asbuild:fee_optimized": "asc assembly/fee.ts -b build/fee_optimized.wasm -t build/fee_optimized.wat --sourceMap --validate --optimize --lib ./lib/typescript_contract_sdk/assembly/keto_env.ts -u abort=~lib/keto_env/keto.abort",
-    "asbuild": "npm run asbuild:untouched && npm run asbuild:optimized && npm run asbuild:fee_untouched && npm run asbuild:fee_optimized"
+    "asbuild:nested_untouched": "asc assembly/nested.ts -b build/nested_untouched.wasm -t build/nested_untouched.wat --sourceMap --validate --lib ./lib/typescript_contract_sdk/assembly/keto_env.ts -u abort=~lib/keto_env/keto.abort",
+    "asbuild:nested_optimized": "asc assembly/nested.ts -b build/nested_optimized.wasm -t build/nested_optimized.wat --sourceMap --validate --optimize --lib ./lib/typescript_contract_sdk/assembly/keto_env.ts -u abort=~lib/keto_env/keto.abort",
+    "asbuild": "npm run asbuild:untouched && npm run asbuild:optimized && npm run asbuild:fee_untouched && npm run asbuild:fee_optimized && npm run asbuild:nested_untouched && npm run asbuild:nested_optimized"
   },
   "dependencies": {
     "assemblyscript": "github:AssemblyScript/assemblyscript",
