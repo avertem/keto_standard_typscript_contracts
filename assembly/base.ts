@@ -1,6 +1,6 @@
 // The entry file of your WebAssembly module.
 import "allocator/arena";
-import {Keto, Transaction} from "../lib/typescript_contract_sdk/assembly/keto"
+import {Keto, ResultRow, Transaction} from "../lib/typescript_contract_sdk/assembly/keto"
 import {Constants} from "./constants"
 
 var KETO_NAME: string = "keto_account_contract"
@@ -21,9 +21,24 @@ export function credit(): bool {
 export function request(): bool {
     let httpRequest = Keto.httpRequest();
     let httpResponse = Keto.httpResponse();
+    
+    let transactions = Keto.executeQuery("SELECT ?id ?blockId ?date ?account WHERE {" +
+        "?transaction <http://keto-coin.io/schema/rdf/1.0/keto/Transaction#id> ?id . " +
+        "?transaction <http://keto-coin.io/schema/rdf/1.0/keto/Transaction#block> ?block . " +
+  		"?block <http://keto-coin.io/schema/rdf/1.0/keto/Block#id> ?blockId . " +
+  		"?transaction <http://keto-coin.io/schema/rdf/1.0/keto/Transaction#date> ?date . " +
+  		"?transaction <http://keto-coin.io/schema/rdf/1.0/keto/Transaction#account> ?account . " +
+        "} ORDER BY DESC(?date) LIMIT 10")
+
     Keto.log(Keto.LOG_LEVEL.DEBUG,"[request][" + httpRequest.getAccount() + "][" + httpRequest.getTarget() + "]");
     httpResponse.setContentType("text/html");
-    httpResponse.setBody("<html><body>[" + httpRequest.getAccount() + "]</body></html>");
+    let html = "<html><body><table><tr><th>id</th><th>block</th><th>account</th><th>date</th></tr>"
+    let row : ResultRow = null;
+    while ((row = transactions.nextRow()) != null) {
+        html += "<tr><td>" + row.getQueryStringByKey("id") + "</td><td>" + row.getQueryStringByKey("blockId") + "</td><td>" + row.getQueryStringByKey("account") + "</td><td>" + row.getQueryStringByKey("date") + "</td></tr>"
+    }
+    html += "</table></body></html>"
+    httpResponse.setBody(html);
     return true;
 }
 
