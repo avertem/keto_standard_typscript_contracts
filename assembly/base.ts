@@ -1,7 +1,7 @@
 // The entry file of your WebAssembly module.
 import "allocator/arena";
 import {Keto, ResultRow, Transaction} from "../lib/typescript_contract_sdk/assembly/keto"
-import {TsJSONBuilder} from "../lib/typescript_contract_sdk/assembly/json/TsJSONBuilder"
+import {TsJSONBuilder,TsJsonType} from "../lib/typescript_contract_sdk/assembly/json/TsJSONBuilder"
 import {Constants} from "./constants"
 import {AccountQuery} from "./account/account_query"
 
@@ -35,33 +35,42 @@ export function request(): bool {
     let jsonBuilder = new TsJSONBuilder();        
     jsonBuilder.add("account").set(httpRequest.getAccount());
     jsonBuilder.add("target").set(httpRequest.getTarget());
-    let data = jsonBuilder.add("data")
-
+    
     if (httpRequest.getTarget() == "account_total") {
         let account = new AccountQuery();
         //data.add("account").set(account.accountHash)
-        data.add("credit").setInt(account.credits)
+        let data = jsonBuilder.add("data")
+        data.add("account").set(httpRequest.getAccount())
+        data.add("credits").setInt(account.credits)
         data.add("debits").setInt(account.debits)
         data.add("total").setInt(account.getTotal())
     } else if (httpRequest.getTarget() == "transactions") {
         let account = new AccountQuery();
+        let data = jsonBuilder.addArray("data")
         account.accountTransactions(data);
     } else {
-        let transactions = Keto.executeQuery("SELECT ?id ?blockId ?date ?account WHERE {" +
+        let transactions = Keto.executeQuery("SELECT ?id ?blockId ?date ?account ?type ?value WHERE { " +
             "?transaction <http://keto-coin.io/schema/rdf/1.0/keto/Transaction#id> ?id . " +
             "?transaction <http://keto-coin.io/schema/rdf/1.0/keto/Transaction#block> ?block . " +
             "?block <http://keto-coin.io/schema/rdf/1.0/keto/Block#id> ?blockId . " +
             "?transaction <http://keto-coin.io/schema/rdf/1.0/keto/Transaction#date> ?date . " +
             "?transaction <http://keto-coin.io/schema/rdf/1.0/keto/Transaction#account> ?account . " +
+  			"?accountTransaction <http://keto-coin.io/schema/rdf/1.0/keto/Account#transaction> ?transaction . " +
+  			"?accountTransaction <http://keto-coin.io/schema/rdf/1.0/keto/AccountTransaction#type> ?type . " + 
+  			"?accountTransaction <http://keto-coin.io/schema/rdf/1.0/keto/AccountTransaction#value> ?value . " +
             "} ORDER BY DESC(?date) LIMIT 10")
         
         let row : ResultRow = null;
+        let data = jsonBuilder.addArray("data")
+        let jsonArray = data.add();
         while ((row = transactions.nextRow()) != null) {
-            let jsonObj = data.add();
+            let jsonObj = jsonArray.add();
             jsonObj.add("id").set(row.getQueryStringByKey("id"))
             jsonObj.add("blockId").set(row.getQueryStringByKey("blockId"))
             jsonObj.add("account").set(row.getQueryStringByKey("account"))
             jsonObj.add("date").set(row.getQueryStringByKey("date"))
+            jsonObj.add("type").set(row.getQueryStringByKey("type"))
+            jsonObj.add("amount").set(row.getQueryStringByKey("value"))
         }
     }
     httpResponse.setContentType("application/javascript");

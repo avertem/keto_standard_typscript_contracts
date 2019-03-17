@@ -41,13 +41,17 @@ export class AccountQuery {
     }
 
     accountTransactions(builder: TsJSONBuilder) : void {
-        let transactions = Keto.executeQuery("SELECT ?id ?blockId ?date ?account WHERE {" +
+        let transactions = Keto.executeQuery(
+            "SELECT ?id ?blockId ?date ?account ?type ?value WHERE { " +
             "?transaction <http://keto-coin.io/schema/rdf/1.0/keto/Transaction#id> ?id . " +
             "?transaction <http://keto-coin.io/schema/rdf/1.0/keto/Transaction#block> ?block . " +
             "?block <http://keto-coin.io/schema/rdf/1.0/keto/Block#id> ?blockId . " +
             "?transaction <http://keto-coin.io/schema/rdf/1.0/keto/Transaction#date> ?date . " +
             "?transaction <http://keto-coin.io/schema/rdf/1.0/keto/Transaction#account>  \"" + this.accountHash + "\"^^<http://www.w3.org/2001/XMLSchema#string> . " +
             "?transaction <http://keto-coin.io/schema/rdf/1.0/keto/Transaction#account> ?account . " +
+  			"?accountTransaction <http://keto-coin.io/schema/rdf/1.0/keto/Account#transaction> ?transaction . " +
+  			"?accountTransaction <http://keto-coin.io/schema/rdf/1.0/keto/AccountTransaction#type> ?type . " + 
+  			"?accountTransaction <http://keto-coin.io/schema/rdf/1.0/keto/AccountTransaction#value> ?value . " +
             "} ORDER BY DESC(?date) LIMIT 10")
 
         let row : ResultRow = null;
@@ -57,6 +61,8 @@ export class AccountQuery {
             jsonObj.add("blockId").set(row.getQueryStringByKey("blockId"))
             jsonObj.add("account").set(this.accountHash)
             jsonObj.add("date").set(row.getQueryStringByKey("date"))
+            jsonObj.add("type").set(row.getQueryStringByKey("type"))
+            jsonObj.add("amount").set(row.getQueryStringByKey("value"))
         }
     }
 }
