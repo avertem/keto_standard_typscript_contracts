@@ -1,5 +1,5 @@
 // The entry file of your WebAssembly module.
-import "allocator/arena";
+//import "allocator/arena";
 import {Keto, Transaction} from "../lib/typescript_contract_sdk/assembly/keto"
 import {Constants} from "./constants"
 

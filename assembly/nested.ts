@@ -1,5 +1,5 @@
 // The entry file of your WebAssembly module.
-import "allocator/arena";
+//import "allocator/arena";
 import {Keto, ResultRow, Transaction} from "../lib/typescript_contract_sdk/assembly/keto"
 import {TsJSON} from "../lib/typescript_contract_sdk/assembly/json/TsJSON"
 import {Constants} from "./constants"
@@ -17,7 +17,7 @@ export function debit(): bool {
         "?change <http://keto-coin.io/schema/rdf/1.0/keto/ChangeSet#type> ?type . " +
         "?change <http://keto-coin.io/schema/rdf/1.0/keto/ChangeSet#signature> ?signature . " +
         "?change <http://keto-coin.io/schema/rdf/1.0/keto/ChangeSet#transactionHash> ?transactionHash . }");
-    let row : ResultRow = null;
+    let row : ResultRow | null;
     while ((row = changeSets.nextRow()) != null)  {
         rdfNode(transaction,row)
     }
@@ -34,7 +34,7 @@ export function credit(): bool {
         "?change <http://keto-coin.io/schema/rdf/1.0/keto/ChangeSet#type> ?type . " +
         "?change <http://keto-coin.io/schema/rdf/1.0/keto/ChangeSet#signature> ?signature . " +
         "?change <http://keto-coin.io/schema/rdf/1.0/keto/ChangeSet#transactionHash> ?transactionHash . }");
-    let row : ResultRow = null;
+    let row : ResultRow | null;
     while ((row = changeSets.nextRow()) != null) {
         rdfNode(transaction,row)    
     }

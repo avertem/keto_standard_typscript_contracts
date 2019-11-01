@@ -9,7 +9,7 @@
     "asbuild": "npm run asbuild:untouched && npm run asbuild:optimized && npm run asbuild:fee_untouched && npm run asbuild:fee_optimized && npm run asbuild:nested_untouched && npm run asbuild:nested_optimized"
   },
   "dependencies": {
-    "assemblyscript": "github:AssemblyScript/assemblyscript#v0.6",
+    "assemblyscript": "github:AssemblyScript/assemblyscript",
     "rxjs": "^6.4.0"
   }
 }

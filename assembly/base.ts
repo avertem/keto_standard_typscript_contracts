@@ -1,5 +1,5 @@
 // The entry file of your WebAssembly module.
-import "allocator/arena";
+//import "allocator/arena";
 import {Keto, ResultRow, Transaction} from "../lib/typescript_contract_sdk/assembly/keto"
 import {TsJSONBuilder,TsJsonType} from "../lib/typescript_contract_sdk/assembly/json/TsJSONBuilder"
 import {Constants} from "./constants"
@@ -62,7 +62,7 @@ export function request(): bool {
   			"?accountTransaction <http://keto-coin.io/schema/rdf/1.0/keto/AccountTransaction#value> ?value . " +
             "} ORDER BY DESC(?date) LIMIT 10")
         
-        let row : ResultRow = null;
+        let row : ResultRow | null;
         let data = jsonBuilder.addArray("data")
         let jsonArray = data.add();
         while ((row = transactions.nextRow()) != null) {

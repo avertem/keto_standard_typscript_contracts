@@ -56,7 +56,7 @@ export class AccountQuery {
   			"?accountTransaction <http://keto-coin.io/schema/rdf/1.0/keto/AccountTransaction#value> ?value . " +
             "} ORDER BY DESC(?date) LIMIT 10")
 
-        let row : ResultRow = null;
+        let row : ResultRow | null;
         while ((row = transactions.nextRow()) != null) {
             let jsonObj = builder.add();
             jsonObj.add("id").set(row.getQueryStringByKey("id"))
