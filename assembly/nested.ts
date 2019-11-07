@@ -1,8 +1,10 @@
 // The entry file of your WebAssembly module.
-//import "allocator/arena";
+//import "allocator/system";
 import {Keto, ResultRow, Transaction} from "../lib/typescript_contract_sdk/assembly/keto"
 import {TsJSON} from "../lib/typescript_contract_sdk/assembly/json/TsJSON"
 import {Constants} from "./constants"
+
+export {_malloc,_free} from "../lib/typescript_contract_sdk/assembly/keto"
 
 var KETO_CHANGE_SET_RDF_ID : string = "http://keto-coin.io/schema/rdf/1.0/keto/ChangeSet#id"
 var KETO_NAME: string  = "nested_transaction"
@@ -44,7 +46,6 @@ export function credit(): bool {
 export function request(): bool {
     let httpRequest = Keto.httpRequest();
     let httpResponse = Keto.httpResponse();
-    Keto.log(Keto.LOG_LEVEL.DEBUG,"[request][" + httpRequest.getAccount() + "][" + httpRequest.getTarget() + "]");
     httpResponse.setContentType("text/html");
     httpResponse.setBody("<html><body>[" + httpRequest.getAccount() + "]</body></html>");
     return true;

@@ -57,7 +57,9 @@ export class AccountQuery {
             "} ORDER BY DESC(?date) LIMIT 10")
 
         let row : ResultRow | null;
+        Keto.log(Keto.LOG_LEVEL.ERROR,"After performing the query.")
         while ((row = transactions.nextRow()) != null) {
+            Keto.log(Keto.LOG_LEVEL.ERROR,"Add transactions to list")
             let jsonObj = builder.add();
             jsonObj.add("id").set(row.getQueryStringByKey("id"))
             jsonObj.add("blockId").set(row.getQueryStringByKey("blockId"))

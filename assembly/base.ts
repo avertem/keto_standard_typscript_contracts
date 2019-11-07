@@ -4,6 +4,7 @@ import {Keto, ResultRow, Transaction} from "../lib/typescript_contract_sdk/assem
 import {TsJSONBuilder,TsJsonType} from "../lib/typescript_contract_sdk/assembly/json/TsJSONBuilder"
 import {Constants} from "./constants"
 import {AccountQuery} from "./account/account_query"
+export {_malloc,_free} from "../lib/typescript_contract_sdk/assembly/keto"
 
 var KETO_NAME: string = "keto_account_contract"
 

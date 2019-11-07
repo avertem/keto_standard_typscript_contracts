@@ -3,6 +3,8 @@
 import {Keto, Transaction} from "../lib/typescript_contract_sdk/assembly/keto"
 import {Constants} from "./constants"
 
+export {_malloc,_free} from "../lib/typescript_contract_sdk/assembly/keto"
+
 var KETO_NAME: string  = "keto_fee_contract"
 
 export function debit(): bool {
@@ -23,7 +25,7 @@ export function credit(): bool {
 export function request(): bool {
     let httpRequest = Keto.httpRequest();
     let httpResponse = Keto.httpResponse();
-    Keto.log(Keto.LOG_LEVEL.DEBUG,"[request][" + httpRequest.getAccount() + "][" + httpRequest.getTarget() + "]");
+    Keto.log(Keto.LOG_LEVEL.ERROR,"[request][" + httpRequest.getAccount() + "][" + httpRequest.getTarget() + "]");
     httpResponse.setContentType("text/html");
     httpResponse.setBody("<html><body>[" + httpRequest.getAccount() + "]</body></html>");
     return true;
