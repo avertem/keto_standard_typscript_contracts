@@ -12,7 +12,7 @@ var KETO_FAUCET_VALUE : u64 = 1000;
 
 export function debit(): bool {
     let transaction = Keto.transaction();
-    Keto.log(Keto.LOG_LEVEL.ERROR,"[debit][faucet] debit account [" + transaction.getAccount() + "]");
+    Keto.log(Keto.LOG_LEVEL.DEBUG,"[debit][faucet] debit account [" + transaction.getAccount() + "]");
 
     let accountQuery = new AccountQuery();
     if (accountQuery.getTotal() < KETO_FAUCET_VALUE) {

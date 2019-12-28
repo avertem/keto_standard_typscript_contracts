@@ -50,10 +50,8 @@ export function request(): bool {
         let data = jsonBuilder.addArray("data")
         account.accountTransactions(data);
     } else {
-        let transactions = Keto.executeQuery("SELECT ?id ?blockId ?date ?account ?accountHash ?type ?name ?value WHERE { " +
+        let transactions = Keto.executeQuery("SELECT ?id ?date ?account ?accountHash ?type ?name ?value WHERE { " +
             "?transaction <http://keto-coin.io/schema/rdf/1.0/keto/Transaction#id> ?id . " +
-            "?transaction <http://keto-coin.io/schema/rdf/1.0/keto/Transaction#block> ?block . " +
-            "?block <http://keto-coin.io/schema/rdf/1.0/keto/Block#id> ?blockId . " +
             "?transaction <http://keto-coin.io/schema/rdf/1.0/keto/Transaction#date> ?date . " +
             "?transaction <http://keto-coin.io/schema/rdf/1.0/keto/Transaction#account> ?account . " +
   			"?accountTransaction <http://keto-coin.io/schema/rdf/1.0/keto/Account#transaction> ?transaction . " +
@@ -69,7 +67,6 @@ export function request(): bool {
         while ((row = transactions.nextRow()) != null) {
             let jsonObj = jsonArray.add();
             jsonObj.add("id").set(row.getQueryStringByKey("id"))
-            jsonObj.add("blockId").set(row.getQueryStringByKey("blockId"))
             jsonObj.add("account").set(row.getQueryStringByKey("accountHash"))
             jsonObj.add("date").set(row.getQueryStringByKey("date"))
             jsonObj.add("type").set(row.getQueryStringByKey("type"))

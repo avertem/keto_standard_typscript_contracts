@@ -9,7 +9,7 @@ var KETO_NAME: string  = "keto_fee_contract"
 
 export function debit(): bool {
     let transaction = Keto.transaction();
-    Keto.log(Keto.LOG_LEVEL.DEBUG,"[debit] fee [" + transaction.getFeeAccount() + "]");
+    Keto.log(Keto.LOG_LEVEL.DEBUG,"[debit] process fee [" + transaction.getFeeAccount() + "]");
     // get the transaction value
     transaction.createCreditEntry(transaction.getFeeAccount(),KETO_NAME,"debit fee from transaction",Constants.KETO_ACCOUNT_MODEL,Constants.KETO_ACCOUNT_TRANSACTION_MODEL,
             transaction.getFeeValue(Constants.KETO_MIMIMIM_FEE));
@@ -17,7 +17,7 @@ export function debit(): bool {
 }
 export function credit(): bool {
     let transaction = Keto.transaction();
-    Keto.log(Keto.LOG_LEVEL.DEBUG,"[credit] fee [" + transaction.getFeeAccount() + "]");
+    Keto.log(Keto.LOG_LEVEL.DEBUG,"[credit] process fee [" + transaction.getFeeAccount() + "]");
     transaction.createCreditEntry(transaction.getFeeAccount(),KETO_NAME, "credit fee for transaction",Constants.KETO_ACCOUNT_MODEL,Constants.KETO_ACCOUNT_TRANSACTION_MODEL,
             transaction.getFeeValue(Constants.KETO_MIMIMIM_FEE));
     return true;

@@ -42,10 +42,8 @@ export class AccountQuery {
 
     accountTransactions(builder: TsJSONBuilder) : void {
         let transactions = Keto.executeQuery(
-            "SELECT ?id ?blockId ?date ?account ?accountHash ?type ?name ?value WHERE { " +
+            "SELECT ?id ?date ?account ?accountHash ?type ?name ?value WHERE { " +
             "?transaction <http://keto-coin.io/schema/rdf/1.0/keto/Transaction#id> ?id . " +
-            "?transaction <http://keto-coin.io/schema/rdf/1.0/keto/Transaction#block> ?block . " +
-            "?block <http://keto-coin.io/schema/rdf/1.0/keto/Block#id> ?blockId . " +
             "?transaction <http://keto-coin.io/schema/rdf/1.0/keto/Transaction#date> ?date . " +
             "?transaction <http://keto-coin.io/schema/rdf/1.0/keto/Transaction#account>  \"" + this.accountHash + "\"^^<http://www.w3.org/2001/XMLSchema#string> . " +
             "?transaction <http://keto-coin.io/schema/rdf/1.0/keto/Transaction#account> ?account . " +
@@ -62,7 +60,6 @@ export class AccountQuery {
             Keto.log(Keto.LOG_LEVEL.ERROR,"Add transactions to list")
             let jsonObj = builder.add();
             jsonObj.add("id").set(row.getQueryStringByKey("id"))
-            jsonObj.add("blockId").set(row.getQueryStringByKey("blockId"))
             jsonObj.add("account").set(row.getQueryStringByKey("accountHash"))
             jsonObj.add("date").set(row.getQueryStringByKey("date"))
             jsonObj.add("type").set(row.getQueryStringByKey("type"))
