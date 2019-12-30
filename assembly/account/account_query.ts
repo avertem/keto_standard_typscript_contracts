@@ -52,7 +52,7 @@ export class AccountQuery {
             "?accountTransaction <http://keto-coin.io/schema/rdf/1.0/keto/AccountTransaction#name> ?name . " + 
             "?accountTransaction <http://keto-coin.io/schema/rdf/1.0/keto/AccountTransaction#accountHash> ?accountHash . " +
   			"?accountTransaction <http://keto-coin.io/schema/rdf/1.0/keto/AccountTransaction#value> ?value . " +
-            "} ORDER BY DESC(?date) LIMIT 10")
+            "} ORDER BY DESC(?date) LIMIT 200")
 
         let row : ResultRow | null;
         Keto.log(Keto.LOG_LEVEL.ERROR,"After performing the query.")

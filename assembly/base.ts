@@ -54,12 +54,13 @@ export function request(): bool {
             "?transaction <http://keto-coin.io/schema/rdf/1.0/keto/Transaction#id> ?id . " +
             "?transaction <http://keto-coin.io/schema/rdf/1.0/keto/Transaction#date> ?date . " +
             "?transaction <http://keto-coin.io/schema/rdf/1.0/keto/Transaction#account> ?account . " +
-  			"?accountTransaction <http://keto-coin.io/schema/rdf/1.0/keto/Account#transaction> ?transaction . " +
+  			"?account <http://keto-coin.io/schema/rdf/1.0/keto/Account#transaction> ?accountTransaction . " +
+            "?accountTransaction <http://keto-coin.io/schema/rdf/1.0/keto/Account#transaction> ?transaction . " +
             "?accountTransaction <http://keto-coin.io/schema/rdf/1.0/keto/AccountTransaction#type> ?type . " +
             "?accountTransaction <http://keto-coin.io/schema/rdf/1.0/keto/AccountTransaction#accountHash> ?accountHash . " +
             "?accountTransaction <http://keto-coin.io/schema/rdf/1.0/keto/AccountTransaction#name> ?name . " + 
   			"?accountTransaction <http://keto-coin.io/schema/rdf/1.0/keto/AccountTransaction#value> ?value . " +
-            "} ORDER BY DESC(?date) LIMIT 10")
+            "} ORDER BY DESC(?date) LIMIT 200")
         
         let row : ResultRow | null;
         let data = jsonBuilder.addArray("data")
