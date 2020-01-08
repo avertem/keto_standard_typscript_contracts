@@ -43,21 +43,19 @@ export class AccountQuery {
     accountTransactions(builder: TsJSONBuilder) : void {
         let transactions = Keto.executeQuery(
             "SELECT ?id ?date ?account ?accountHash ?type ?name ?value WHERE { " +
+            "?transaction <http://keto-coin.io/schema/rdf/1.0/keto/Transaction#account>  \"" + this.accountHash + "\"^^<http://www.w3.org/2001/XMLSchema#string> . " +
             "?transaction <http://keto-coin.io/schema/rdf/1.0/keto/Transaction#id> ?id . " +
             "?transaction <http://keto-coin.io/schema/rdf/1.0/keto/Transaction#date> ?date . " +
-            "?transaction <http://keto-coin.io/schema/rdf/1.0/keto/Transaction#account>  \"" + this.accountHash + "\"^^<http://www.w3.org/2001/XMLSchema#string> . " +
             "?transaction <http://keto-coin.io/schema/rdf/1.0/keto/Transaction#account> ?account . " +
   			"?accountTransaction <http://keto-coin.io/schema/rdf/1.0/keto/Account#transaction> ?transaction . " +
             "?accountTransaction <http://keto-coin.io/schema/rdf/1.0/keto/AccountTransaction#type> ?type . " + 
             "?accountTransaction <http://keto-coin.io/schema/rdf/1.0/keto/AccountTransaction#name> ?name . " + 
             "?accountTransaction <http://keto-coin.io/schema/rdf/1.0/keto/AccountTransaction#accountHash> ?accountHash . " +
   			"?accountTransaction <http://keto-coin.io/schema/rdf/1.0/keto/AccountTransaction#value> ?value . " +
-            "} ORDER BY DESC(?date) LIMIT 200")
+            "} ORDER BY DESC(?date) LIMIT 50")
 
         let row : ResultRow | null;
-        Keto.log(Keto.LOG_LEVEL.ERROR,"After performing the query.")
         while ((row = transactions.nextRow()) != null) {
-            Keto.log(Keto.LOG_LEVEL.ERROR,"Add transactions to list")
             let jsonObj = builder.add();
             jsonObj.add("id").set(row.getQueryStringByKey("id"))
             jsonObj.add("account").set(row.getQueryStringByKey("accountHash"))
