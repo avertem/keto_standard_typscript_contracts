@@ -14,25 +14,26 @@ export class AccountQuery {
         this.transaction = Keto.transaction();
         this.accountHash = this.transaction.getAccount();
 
-        // calculate the total credits to this account
-        let creditTotal = Keto.executeQuery("SELECT (SUM(?value) as ?totalValue) WHERE { " +
-            "?transaction <http://keto-coin.io/schema/rdf/1.0/keto/AccountTransaction#accountHash> \"" + this.accountHash + "\"^^<http://www.w3.org/2001/XMLSchema#string> . " +
-            "?transaction <http://keto-coin.io/schema/rdf/1.0/keto/AccountTransaction#type> \"credit\"^^<http://www.w3.org/2001/XMLSchema#string> . " +
-            "?transaction <http://keto-coin.io/schema/rdf/1.0/keto/AccountTransaction#value> ?value . " +
-            "}",Keto.QUERY_TYPES.REMOTE)
-        
-        if (creditTotal.getRowCount()) {
-            this.credits = creditTotal.nextRow().getQueryLongByKey("totalValue")
+        let accountTotal = Keto.executeQuery(`SELECT ?type ( SUM( ?value ) AS ?totalValue )
+        WHERE {
+          {
+            {
+              ?transaction <http://keto-coin.io/schema/rdf/1.0/keto/AccountTransaction#accountHash> "` + this.accountHash + `"^^<http://www.w3.org/2001/XMLSchema#string> .
+              ?transaction <http://keto-coin.io/schema/rdf/1.0/keto/AccountTransaction#type> ?type .
+              ?transaction <http://keto-coin.io/schema/rdf/1.0/keto/AccountTransaction#value> ?value .
+            }
+          }
         }
+        GROUP BY ?type
+        LIMIT 250`,Keto.QUERY_TYPES.REMOTE)
 
-        // calculate the total debits to this account
-        let debitTotal = Keto.executeQuery("SELECT (SUM(?value) as ?totalValue) WHERE { " +
-            "?transaction <http://keto-coin.io/schema/rdf/1.0/keto/AccountTransaction#accountHash> \"" + this.accountHash + "\"^^<http://www.w3.org/2001/XMLSchema#string> . " +
-            "?transaction <http://keto-coin.io/schema/rdf/1.0/keto/AccountTransaction#type> \"debit\"^^<http://www.w3.org/2001/XMLSchema#string> . " +
-            "?transaction <http://keto-coin.io/schema/rdf/1.0/keto/AccountTransaction#value> ?value . " +
-            "}",Keto.QUERY_TYPES.REMOTE)
-        if (debitTotal.getRowCount()) {
-            this.debits =  debitTotal.nextRow().getQueryLongByKey("totalValue")
+        let row : ResultRow | null;
+        while ((row = accountTotal.nextRow()) != null) {
+            if (row.getQueryStringByKey("type") == "debit") {
+                this.debits = row.getQueryLongByKey("totalValue");
+            } else {
+                this.credits = row.getQueryLongByKey("totalValue");
+            }
         }
     }
 
