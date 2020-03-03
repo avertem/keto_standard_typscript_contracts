@@ -8,7 +8,9 @@
     "asbuild:nested_optimized": "asc assembly/nested.ts -b build/nested_optimized.wasm -t build/nested_optimized.wat  --sourceMap --validate --optimize --sharedMemory",
     "asbuild:faucet_untouched": "asc assembly/faucet.ts -b build/faucet_untouched.wasm -t build/faucet_untouched.wat  --sourceMap --validate --sharedMemory",
     "asbuild:faucet_optimized": "asc assembly/faucet.ts -b build/faucet_optimized.wasm -t build/faucet_optimized.wat  --sourceMap --validate --optimize --sharedMemory",
-    "asbuild": "npm run asbuild:untouched && npm run asbuild:optimized && npm run asbuild:fee_untouched && npm run asbuild:fee_optimized && npm run asbuild:nested_untouched && npm run asbuild:nested_optimized && npm run asbuild:faucet_untouched && npm run asbuild:faucet_optimized"
+    "asbuild:account_untouched": "asc assembly/account.ts -b build/account_untouched.wasm -t build/account_untouched.wat  --sourceMap --validate --sharedMemory",
+    "asbuild:account_optimized": "asc assembly/account.ts -b build/account_optimized.wasm -t build/account_optimized.wat  --sourceMap --validate --optimize --sharedMemory",
+    "asbuild": "npm run asbuild:untouched && npm run asbuild:optimized && npm run asbuild:fee_untouched && npm run asbuild:fee_optimized && npm run asbuild:nested_untouched && npm run asbuild:nested_optimized && npm run asbuild:faucet_untouched && npm run asbuild:faucet_optimized && npm run asbuild:account_untouched && npm run asbuild:account_optimized"
   },
   "dependencies": {
     "assemblyscript": "github:AssemblyScript/assemblyscript",
