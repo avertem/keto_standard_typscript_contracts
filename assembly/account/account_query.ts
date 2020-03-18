@@ -43,17 +43,15 @@ export class AccountQuery {
 
     accountTransactions(builder: TsJSONBuilder) : void {
         let transactions = Keto.executeQuery(
-            "SELECT ?id ?date ?account ?accountHash ?type ?name ?value WHERE { " +
-            "?transaction <http://keto-coin.io/schema/rdf/1.0/keto/Transaction#account>  \"" + this.accountHash + "\"^^<http://www.w3.org/2001/XMLSchema#string> . " +
-            "?transaction <http://keto-coin.io/schema/rdf/1.0/keto/Transaction#id> ?id . " +
-            "?transaction <http://keto-coin.io/schema/rdf/1.0/keto/Transaction#date> ?date . " +
-            "?transaction <http://keto-coin.io/schema/rdf/1.0/keto/Transaction#account> ?account . " +
-  			"?accountTransaction <http://keto-coin.io/schema/rdf/1.0/keto/Account#transaction> ?transaction . " +
-            "?accountTransaction <http://keto-coin.io/schema/rdf/1.0/keto/AccountTransaction#type> ?type . " + 
-            "?accountTransaction <http://keto-coin.io/schema/rdf/1.0/keto/AccountTransaction#name> ?name . " + 
-            "?accountTransaction <http://keto-coin.io/schema/rdf/1.0/keto/AccountTransaction#accountHash> ?accountHash . " +
-  			"?accountTransaction <http://keto-coin.io/schema/rdf/1.0/keto/AccountTransaction#value> ?value . " +
-            "} ORDER BY DESC(?date) LIMIT 50")
+            `SELECT ?id ?accountHash ?date ?type ?name ?value WHERE {
+                ?accountTransaction <http://keto-coin.io/schema/rdf/1.0/keto/AccountTransaction#accountHash> "`+ this.accountHash + `"^^<http://www.w3.org/2001/XMLSchema#string> .
+                ?accountTransaction <http://keto-coin.io/schema/rdf/1.0/keto/AccountTransaction#id> ?id .
+                ?accountTransaction <http://keto-coin.io/schema/rdf/1.0/keto/AccountTransaction#accountHash> ?accountHash .
+                ?accountTransaction <http://keto-coin.io/schema/rdf/1.0/keto/AccountTransaction#dateTime> ?date .
+                ?accountTransaction <http://keto-coin.io/schema/rdf/1.0/keto/AccountTransaction#type> ?type .
+                ?accountTransaction <http://keto-coin.io/schema/rdf/1.0/keto/AccountTransaction#name> ?name .
+                ?accountTransaction <http://keto-coin.io/schema/rdf/1.0/keto/AccountTransaction#value> ?value .
+            } ORDER BY DESC(?date) LIMIT 50`)
 
         let row : ResultRow | null;
         while ((row = transactions.nextRow()) != null) {

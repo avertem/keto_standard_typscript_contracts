@@ -10,7 +10,11 @@
     "asbuild:faucet_optimized": "asc assembly/faucet.ts -b build/faucet_optimized.wasm -t build/faucet_optimized.wat  --sourceMap --validate --optimize --sharedMemory",
     "asbuild:account_untouched": "asc assembly/account.ts -b build/account_untouched.wasm -t build/account_untouched.wat  --sourceMap --validate --sharedMemory",
     "asbuild:account_optimized": "asc assembly/account.ts -b build/account_optimized.wasm -t build/account_optimized.wat  --sourceMap --validate --optimize --sharedMemory",
-    "asbuild": "npm run asbuild:untouched && npm run asbuild:optimized && npm run asbuild:fee_untouched && npm run asbuild:fee_optimized && npm run asbuild:nested_untouched && npm run asbuild:nested_optimized && npm run asbuild:faucet_untouched && npm run asbuild:faucet_optimized && npm run asbuild:account_untouched && npm run asbuild:account_optimized"
+    "asbuild:contract_untouched": "asc assembly/contract.ts -b build/contract_untouched.wasm -t build/contract_untouched.wat  --sourceMap --validate --sharedMemory",
+    "asbuild:contract_optimized": "asc assembly/contract.ts -b build/contract_optimized.wasm -t build/contract_optimized.wat  --sourceMap --validate --optimize --sharedMemory",
+    "asbuild:namespace_untouched": "asc assembly/namespace.ts -b build/namespace_untouched.wasm -t build/namespace_untouched.wat  --sourceMap --validate --sharedMemory",
+    "asbuild:namespace_optimized": "asc assembly/namespace.ts -b build/namespace_optimized.wasm -t build/namespace_optimized.wat  --sourceMap --validate --optimize --sharedMemory",
+    "asbuild": "npm run asbuild:untouched && npm run asbuild:optimized && npm run asbuild:fee_untouched && npm run asbuild:fee_optimized && npm run asbuild:nested_untouched && npm run asbuild:nested_optimized && npm run asbuild:faucet_untouched && npm run asbuild:faucet_optimized && npm run asbuild:account_untouched && npm run asbuild:account_optimized && npm run asbuild:contract_untouched && npm run asbuild:contract_optimized && npm run asbuild:namespace_untouched && npm run asbuild:namespace_optimized"
   },
   "dependencies": {
     "assemblyscript": "github:AssemblyScript/assemblyscript",
