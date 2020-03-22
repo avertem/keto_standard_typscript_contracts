@@ -43,13 +43,13 @@ export class AccountQuery {
 
     accountTransactions(builder: TsJSONBuilder) : void {
         let transactions = Keto.executeQuery(
-            `SELECT ?id ?accountHash ?date ?type ?name ?value WHERE {
+            `SELECT ?id ?date ?type ?name ?description ?value WHERE {
                 ?accountTransaction <http://keto-coin.io/schema/rdf/1.0/keto/AccountTransaction#accountHash> "`+ this.accountHash + `"^^<http://www.w3.org/2001/XMLSchema#string> .
                 ?accountTransaction <http://keto-coin.io/schema/rdf/1.0/keto/AccountTransaction#id> ?id .
-                ?accountTransaction <http://keto-coin.io/schema/rdf/1.0/keto/AccountTransaction#accountHash> ?accountHash .
                 ?accountTransaction <http://keto-coin.io/schema/rdf/1.0/keto/AccountTransaction#dateTime> ?date .
                 ?accountTransaction <http://keto-coin.io/schema/rdf/1.0/keto/AccountTransaction#type> ?type .
                 ?accountTransaction <http://keto-coin.io/schema/rdf/1.0/keto/AccountTransaction#name> ?name .
+                ?accountTransaction <http://keto-coin.io/schema/rdf/1.0/keto/AccountTransaction#description> ?description .
                 ?accountTransaction <http://keto-coin.io/schema/rdf/1.0/keto/AccountTransaction#value> ?value .
             } ORDER BY DESC(?date) LIMIT 50`)
 
@@ -57,11 +57,13 @@ export class AccountQuery {
         while ((row = transactions.nextRow()) != null) {
             let jsonObj = builder.add();
             jsonObj.add("id").set(row.getQueryStringByKey("id"))
-            jsonObj.add("account").set(row.getQueryStringByKey("accountHash"))
             jsonObj.add("date").set(row.getQueryStringByKey("date"))
             jsonObj.add("type").set(row.getQueryStringByKey("type"))
             jsonObj.add("name").set(row.getQueryStringByKey("name"))
+            jsonObj.add("description").set(row.getQueryStringByKey("description"))
             jsonObj.add("amount").set(row.getQueryStringByKey("value"))
         }
     }
+
+
 }

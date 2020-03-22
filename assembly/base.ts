@@ -6,7 +6,8 @@ import {Constants} from "./constants"
 import {AccountQuery} from "./account/account_query"
 export {_malloc,_free} from "../lib/typescript_contract_sdk/assembly/keto"
 
-var KETO_NAME: string = "keto_account_contract"
+var KETO_NAME: string = "avertem_account_contract"
+const FEE_NAMESPACE : string = "http://keto-coin.io/schema/rdf/1.0/keto/Fee#";
 
 export function debit(): bool {
     let transaction = Keto.transaction();
@@ -24,9 +25,15 @@ export function debit(): bool {
 
 export function credit(): bool {
     let transaction = Keto.transaction();
-    Keto.log(Keto.LOG_LEVEL.DEBUG,"[credit][" + transaction.getAccount() + "]");
-    transaction.createCreditEntry(transaction.getAccount(),KETO_NAME,"credit the target account",Constants.KETO_ACCOUNT_MODEL,Constants.KETO_ACCOUNT_TRANSACTION_MODEL,
-            transaction.getTransactionValue() - transaction.getTotalFeeValue(Constants.KETO_MIMIMIM_FEE));
+    if (checkForFeeInfo(transaction)) {
+        Keto.log(Keto.LOG_LEVEL.INFO,"[credit][" + transaction.getAccount() + "] this is a fee transaction and no fee will be deducted");
+        transaction.createCreditEntry(transaction.getAccount(),KETO_NAME,"credit the target account with the fee value",Constants.KETO_ACCOUNT_MODEL,Constants.KETO_ACCOUNT_TRANSACTION_MODEL,
+                transaction.getTransactionValue());
+    } else {
+        Keto.log(Keto.LOG_LEVEL.INFO,"[credit][" + transaction.getAccount() + "] this is not a fee transaction and fees will be deducted");
+        transaction.createCreditEntry(transaction.getAccount(),KETO_NAME,"credit the target account",Constants.KETO_ACCOUNT_MODEL,Constants.KETO_ACCOUNT_TRANSACTION_MODEL,
+                transaction.getTransactionValue() - transaction.getTotalFeeValue(Constants.KETO_MIMIMIM_FEE));
+    }
     return true;
 }
 
@@ -61,6 +68,35 @@ export function request(): bool {
 
 export function process(): void {
     Keto.console("[process]hello world");
+}
+
+function checkForFeeInfo(transaction : Transaction) : bool {
+    // copy the contract information
+    Keto.log(Keto.LOG_LEVEL.INFO,"[avertem_account_contract][copyFeeInfo] execute query");
+    let changeSets = Keto.executeQuery("SELECT ?subject ?predicate ?object WHERE { " +
+        "?subject ?predicate ?object . " +
+    "}");
+
+    Keto.log(Keto.LOG_LEVEL.INFO,"[avertem_account_contract][copyFeeInfo] process results");
+    let row : ResultRow | null;
+    while ((row = changeSets.nextRow()) != null) {
+        if (checkRdfNode(transaction,row)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function checkRdfNode(transaction: Transaction, row : ResultRow) : bool {
+    let id =  row.getQueryStringByKey("id")
+    let subject = row.getQueryStringByKey("subject");
+    //Keto.log(Keto.LOG_LEVEL.DEBUG,"[keto_contract_management_contract][rdfNode] validate [" + row.getQueryStringByKey("subject") + 
+    //    "][" + row.getQueryStringByKey("predicate") + 
+    //    "][" + row.getQueryStringByKey("object") + "]");
+    if (!subject.startsWith(FEE_NAMESPACE)) {
+        return false;
+    }
+    return true;
 }
 
 
