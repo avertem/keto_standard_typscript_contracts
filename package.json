@@ -14,7 +14,9 @@
     "asbuild:contract_optimized": "asc assembly/contract.ts -b build/contract_optimized.wasm -t build/contract_optimized.wat  --sourceMap --validate --optimize --sharedMemory",
     "asbuild:namespace_untouched": "asc assembly/namespace.ts -b build/namespace_untouched.wasm -t build/namespace_untouched.wat  --sourceMap --validate --sharedMemory",
     "asbuild:namespace_optimized": "asc assembly/namespace.ts -b build/namespace_optimized.wasm -t build/namespace_optimized.wat  --sourceMap --validate --optimize --sharedMemory",
-    "asbuild": "npm run asbuild:untouched && npm run asbuild:optimized && npm run asbuild:fee_untouched && npm run asbuild:fee_optimized && npm run asbuild:nested_untouched && npm run asbuild:nested_optimized && npm run asbuild:faucet_untouched && npm run asbuild:faucet_optimized && npm run asbuild:account_untouched && npm run asbuild:account_optimized && npm run asbuild:contract_untouched && npm run asbuild:contract_optimized && npm run asbuild:namespace_untouched && npm run asbuild:namespace_optimized"
+    "asbuild:sidechain_untouched": "asc assembly/sidechain.ts -b build/sidechain_untouched.wasm -t build/sidechain_untouched.wat  --sourceMap --validate --sharedMemory",
+    "asbuild:sidechain_optimized": "asc assembly/sidechain.ts -b build/sidechain_optimized.wasm -t build/sidechain_optimized.wat  --sourceMap --validate --optimize --sharedMemory",
+    "asbuild": "npm run asbuild:untouched && npm run asbuild:optimized && npm run asbuild:fee_untouched && npm run asbuild:fee_optimized && npm run asbuild:nested_untouched && npm run asbuild:nested_optimized && npm run asbuild:faucet_untouched && npm run asbuild:faucet_optimized && npm run asbuild:account_untouched && npm run asbuild:account_optimized && npm run asbuild:contract_untouched && npm run asbuild:contract_optimized && npm run asbuild:namespace_untouched && npm run asbuild:namespace_optimized && npm run asbuild:sidechain_untouched && npm run asbuild:sidechain_optimized"
   },
   "dependencies": {
     "assemblyscript": "github:AssemblyScript/assemblyscript",

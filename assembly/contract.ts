@@ -5,6 +5,7 @@ import {AccountInfo} from "./account/account_info"
 export {_malloc,_free} from "../lib/typescript_contract_sdk/assembly/keto"
 
 var KETO_NAME: string = "avertem__contract_management_contract"
+const CONTRACT_FEE : i64 = 1000;
 
 class ValidationResult {
     status : bool;
@@ -18,6 +19,11 @@ class ValidationResult {
 
 export function debit(): bool {
     Keto.log(Keto.LOG_LEVEL.INFO,"[avertem__contract_management_contract][debit] process the debit transaction");
+
+    let transaction = Keto.transaction();
+
+    transaction.createDebitEntry(transaction.getAccount(),KETO_NAME,"debit the source for the contract allocation fee",Constants.KETO_ACCOUNT_MODEL,Constants.KETO_ACCOUNT_TRANSACTION_MODEL,CONTRACT_FEE);
+
     return true;
 }
 
@@ -30,7 +36,7 @@ export function credit(): bool {
     let validationResult = validate(transaction,contract)
     if (!validationResult.status) {
         logBadRequest(transaction, validationResult.error )
-    } else {
+    } else if (transaction.createCreditEntry(transaction.getAccount(),KETO_NAME,"debit the contract account for the fee",Constants.KETO_ACCOUNT_MODEL,Constants.KETO_ACCOUNT_TRANSACTION_MODEL,CONTRACT_FEE)) {
         // copy the contract information
         Keto.log(Keto.LOG_LEVEL.INFO,"[avertem__contract_management_contract][credit] execute query");
         let changeSets = Keto.executeQuery("SELECT ?subject ?predicate ?object WHERE { " +
@@ -44,6 +50,8 @@ export function credit(): bool {
         }
 
         Keto.log(Keto.LOG_LEVEL.INFO,"[avertem__contract_management_contract][credit] process the account transaction");
+    } else {
+        logBadRequest(transaction, "Transaction fee is not present" )
     }
     return true;
     
@@ -51,10 +59,44 @@ export function credit(): bool {
 
 
 export function request(): bool {
+    let jsonBuilder = new TsJSONBuilder();   
     let httpRequest = Keto.httpRequest();
     let httpResponse = Keto.httpResponse();
 
-
+    jsonBuilder.add("account").set(httpRequest.getAccount());
+    jsonBuilder.add("target").set(httpRequest.getTarget());
+    
+    if (httpRequest.getTarget() == "contracts") {
+        let namespaceInfo = Keto.executeQuery(`SELECT ?hash ?name ?namespace WHERE {
+            ?subject <http://keto-coin.io/schema/rdf/1.0/keto/Contract#accountHash> "` + httpRequest.getAccount() + `"^^<http://www.w3.org/2001/XMLSchema#string> .
+            ?subject <http://keto-coin.io/schema/rdf/1.0/keto/Contract#hash> ?hash .
+            ?subject <http://keto-coin.io/schema/rdf/1.0/keto/Contract#name> ?name .
+            ?subject <http://keto-coin.io/schema/rdf/1.0/keto/Contract#namespace> ?namespace .
+            }`,Keto.QUERY_TYPES.REMOTE);
+        let row : ResultRow | null;
+        let dataBuilder = jsonBuilder.addArray("data")
+        while ((row = namespaceInfo.nextRow()) != null) {
+            let jsonObj = dataBuilder.add();
+            jsonObj.add("hash").set(row.getQueryStringByKey("hash"))
+            jsonObj.add("name").set(row.getQueryStringByKey("name"))
+            jsonObj.add("namespace").set(row.getQueryStringByKey("namespace"))
+        }
+    } else if (httpRequest.getTarget() == "contract_errors") {
+        let namespaceInfo = Keto.executeQuery(`SELECT ?id ?msg WHERE {
+            ?subject <http://keto-coin.io/schema/rdf/1.0/keto/ContractError#debit> "` + httpRequest.getAccount() + `"^^<http://www.w3.org/2001/XMLSchema#string> .
+            ?subject <http://keto-coin.io/schema/rdf/1.0/keto/ContractError#id> ?id .
+            ?subject <http://keto-coin.io/schema/rdf/1.0/keto/ContractError#msg> ?msg .
+            }`,Keto.QUERY_TYPES.REMOTE);
+        let row : ResultRow | null;
+        let dataBuilder = jsonBuilder.addArray("data")
+        while ((row = namespaceInfo.nextRow()) != null) {
+            let jsonObj = dataBuilder.add();
+            jsonObj.add("id").set(row.getQueryStringByKey("id"))
+            jsonObj.add("msg").set(row.getQueryStringByKey("msg"))
+        }
+    }
+    httpResponse.setContentType("application/javascript");
+    httpResponse.setBody(jsonBuilder.toJson());
     return true;
 }
 
@@ -162,10 +204,10 @@ function checkContract(query : string, contractHash: string, contractName: strin
 
 function validateNamespace(account : string, contractNamespace: string) : bool {
     let namespaceInfo = Keto.executeQuery(`SELECT ?namespace ?accountHash WHERE {
-        ?namespace <http://keto-coin.io/schema/rdf/1.0/keto/Namespace#namespace> '${contractNamespace}'^^<http://www.w3.org/2001/XMLSchema#string> .
-        ?namespace <http://keto-coin.io/schema/rdf/1.0/keto/Namespace#accountHash> '${account}'^^<http://www.w3.org/2001/XMLSchema#string> .
-        ?namespace <http://keto-coin.io/schema/rdf/1.0/keto/Namespace#namespace> ?namespace .
-        ?namespace <http://keto-coin.io/schema/rdf/1.0/keto/Namespace#accountHash> ?accountHash .
+        ?subject <http://keto-coin.io/schema/rdf/1.0/keto/Namespace#namespace> '${contractNamespace}'^^<http://www.w3.org/2001/XMLSchema#string> .
+        ?subject <http://keto-coin.io/schema/rdf/1.0/keto/Namespace#accountHash> '${account}'^^<http://www.w3.org/2001/XMLSchema#string> .
+        ?subject <http://keto-coin.io/schema/rdf/1.0/keto/Namespace#namespace> ?namespace .
+        ?subject <http://keto-coin.io/schema/rdf/1.0/keto/Namespace#accountHash> ?accountHash .
         }`, Keto.QUERY_TYPES.REMOTE);
 
     // if there are 
@@ -201,9 +243,10 @@ function logBadRequest(transaction: Transaction, msg: string = "Unknown error") 
     let transactionId = transaction.getTransaction();
     let debitAccount = transaction.getDebitAccount();
     let creditAccount = transaction.getCreditAccount();
+    Keto.log(Keto.LOG_LEVEL.ERROR,"[keto_contract_management_contract][logBadRequest] failed because : " + msg );
     transaction.addTripleString("http://keto-coin.io/schema/rdf/1.0/keto/ContractError#id/"+ transactionId, "http://keto-coin.io/schema/rdf/1.0/keto/ContractError#id", transactionId);
     transaction.addTripleString("http://keto-coin.io/schema/rdf/1.0/keto/ContractError#id/"+ transactionId, "http://keto-coin.io/schema/rdf/1.0/keto/ContractError#debit", debitAccount);
     transaction.addTripleString("http://keto-coin.io/schema/rdf/1.0/keto/ContractError#id/"+ transactionId, "http://keto-coin.io/schema/rdf/1.0/keto/ContractError#credit", creditAccount);
     transaction.addTripleString("http://keto-coin.io/schema/rdf/1.0/keto/ContractError#id/"+ transactionId, "http://keto-coin.io/schema/rdf/1.0/keto/ContractError#msg", msg );
-    transaction.addTripleString("http://keto-coin.io/schema/rdf/1.0/keto/ContractError#id/"+ transactionId, "http://keto-coin.io/schema/rdf/1.0/keto/AccountModifier#accountModifer", "PUBLIC");
+    transaction.addTripleString("http://keto-coin.io/schema/rdf/1.0/keto/ContractError#id/"+ transactionId, "http://keto-coin.io/schema/rdf/1.0/keto/AccountModifier#accountModifier", "PUBLIC");
 }
