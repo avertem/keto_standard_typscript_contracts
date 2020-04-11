@@ -52,9 +52,9 @@ export function process(): void {
 function handleActionInfo(transaction : Transaction, type: string) : bool {
     // copy the contract information
     Keto.log(Keto.LOG_LEVEL.INFO,"[avertem_fee_contract][handleActionInfo] execute query");
-    let changeSets = Keto.executeQuery("SELECT ?subject ?predicate ?object WHERE { " +
-        "?subject ?predicate ?object . " +
-    "}");
+    let changeSets = Keto.executeQuery(`SELECT ?subject ?predicate ?object WHERE { 
+        ?subject ?predicate ?object .
+    }`);
 
     Keto.log(Keto.LOG_LEVEL.INFO,"[avertem_fee_contract][handleActionInfo] process results");
     let row : ResultRow | null;

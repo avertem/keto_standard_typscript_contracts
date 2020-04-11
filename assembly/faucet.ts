@@ -52,9 +52,9 @@ export function process(): void {
 function copyFaucetInfo(transaction : Transaction) : void {
     // copy the contract information
     Keto.log(Keto.LOG_LEVEL.INFO,"[avertem_fee_contract][copyFeeInfo] execute query");
-    let changeSets = Keto.executeQuery("SELECT ?subject ?predicate ?object WHERE { " +
-        "?subject ?predicate ?object . " +
-    "}");
+    let changeSets = Keto.executeQuery(`SELECT ?subject ?predicate ?object WHERE {
+        ?subject ?predicate ?object . 
+    }`);
 
     Keto.log(Keto.LOG_LEVEL.INFO,"[avertem__account_faucet][copyFeeInfo] process results");
     let row : ResultRow | null;

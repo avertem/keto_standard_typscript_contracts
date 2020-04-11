@@ -15,9 +15,9 @@ export function credit(): bool {
     Keto.log(Keto.LOG_LEVEL.INFO,"[keto_account_management_contract][credit] begin processing");
     let transaction = Keto.transaction();
     Keto.log(Keto.LOG_LEVEL.INFO,"[keto_account_management_contract][credit] execute query");
-    let changeSets = Keto.executeQuery("SELECT ?subject ?predicate ?object WHERE { " +
-        "?subject ?predicate ?object . " +
-    "}");
+    let changeSets = Keto.executeQuery(`SELECT ?subject ?predicate ?object WHERE { 
+        ?subject ?predicate ?object .
+    }`);
 
     Keto.log(Keto.LOG_LEVEL.INFO,"[keto_account_management_contract][credit] process results");
     let row : ResultRow | null;

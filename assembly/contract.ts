@@ -22,7 +22,13 @@ export function debit(): bool {
 
     let transaction = Keto.transaction();
 
-    transaction.createDebitEntry(transaction.getAccount(),KETO_NAME,"debit the source for the contract allocation fee",Constants.KETO_ACCOUNT_MODEL,Constants.KETO_ACCOUNT_TRANSACTION_MODEL,CONTRACT_FEE);
+    let contract = Keto.contract();
+    
+    // validate the transaction
+    let validationResult = validate(transaction,contract)
+    if (validationResult.status) {
+        transaction.createDebitEntry(transaction.getAccount(),KETO_NAME,"debit the source for the contract allocation fee",Constants.KETO_ACCOUNT_MODEL,Constants.KETO_ACCOUNT_TRANSACTION_MODEL,CONTRACT_FEE);
+    }
 
     return true;
 }
@@ -39,9 +45,9 @@ export function credit(): bool {
     } else if (transaction.createCreditEntry(transaction.getAccount(),KETO_NAME,"debit the contract account for the fee",Constants.KETO_ACCOUNT_MODEL,Constants.KETO_ACCOUNT_TRANSACTION_MODEL,CONTRACT_FEE)) {
         // copy the contract information
         Keto.log(Keto.LOG_LEVEL.INFO,"[avertem__contract_management_contract][credit] execute query");
-        let changeSets = Keto.executeQuery("SELECT ?subject ?predicate ?object WHERE { " +
-            "?subject ?predicate ?object . " +
-        "}");
+        let changeSets = Keto.executeQuery(`SELECT ?subject ?predicate ?object WHERE { 
+            ?subject ?predicate ?object .
+        }`);
 
         Keto.log(Keto.LOG_LEVEL.INFO,"[avertem__contract_management_contract][credit] process results");
         let row : ResultRow | null;
@@ -141,34 +147,34 @@ function validate( transaction : Transaction, contract: Contract ) : ValidationR
     
     if (!checkContract(
         `SELECT ?contractHash ?contractName ?contractNamespace ?accountHash WHERE {
-        ?contract <http://keto-coin.io/schema/rdf/1.0/keto/Contract#hash> '${contractHash}'^^<http://www.w3.org/2001/XMLSchema#string> .
+        ?contract <http://keto-coin.io/schema/rdf/1.0/keto/Contract#hash> '` + contractHash + `'^^<http://www.w3.org/2001/XMLSchema#string> .
         ?contract <http://keto-coin.io/schema/rdf/1.0/keto/Contract#hash> ?contractHash .
         ?contract <http://keto-coin.io/schema/rdf/1.0/keto/Contract#name> ?contractName .
         ?contract <http://keto-coin.io/schema/rdf/1.0/keto/Contract#namespace> ?contractNamespace .
         ?contract <http://keto-coin.io/schema/rdf/1.0/keto/Contract#accountHash> ?accountHash .
         }`,contractHash,contractName)) {
-        return new ValidationResult(false,`Contract clash on contract hash [${contractHash}]`);
+        return new ValidationResult(false,`Contract clash on contract hash [` + contractHash + `]`);
     }
 
     if (!checkContract(
         `SELECT ?contractHash ?contractName ?contractNamespace ?accountHash WHERE {
-        ?contract <http://keto-coin.io/schema/rdf/1.0/keto/Contract#name> '${contractName}'^^<http://www.w3.org/2001/XMLSchema#string> .
+        ?contract <http://keto-coin.io/schema/rdf/1.0/keto/Contract#name> '` + contractName + `'^^<http://www.w3.org/2001/XMLSchema#string> .
         ?contract <http://keto-coin.io/schema/rdf/1.0/keto/Contract#name> ?contractName .
         ?contract <http://keto-coin.io/schema/rdf/1.0/keto/Contract#hash> ?contractHash .
         ?contract <http://keto-coin.io/schema/rdf/1.0/keto/Contract#namespace> ?contractNamespace .
         ?contract <http://keto-coin.io/schema/rdf/1.0/keto/Contract#accountHash> ?accountHash .
         }`,contractHash,contractName)) {
-        return new ValidationResult(false,`Contract clash on contract name ${contractHash}`);
+        return new ValidationResult(false,`Contract clash on contract name ` + contractHash);
     }
 
     if (!validateNamespace(accountHash, contractNamespace)) {
-        return new ValidationResult(false,`The namespace [${contractNamespace}] is not owned by this account [${accountHash}]`);
+        return new ValidationResult(false,`The namespace [` + contractNamespace + `] is not owned by this account [` + accountHash + `]`);
     }
 
     if (contractName.indexOf("__") != -1) {
         let contractNameNamespace = contractName.substring(0,contractName.indexOf("__"));
         if (!validateNamespace(accountHash, contractNameNamespace)) {
-            return new ValidationResult(false,`The name for the contract pre-pended a namespace [${contractNameNamespace}] that is not owned by this account [${accountHash}]`);
+            return new ValidationResult(false,`The name for the contract pre-pended a namespace [` + contractNameNamespace + `] that is not owned by this account [`+ accountHash + `]`);
         }
     } else {
         return new ValidationResult(false,'Illegally formatted name [' + contractName + '] must be pre-pended with a valid contract namespace');
@@ -204,8 +210,8 @@ function checkContract(query : string, contractHash: string, contractName: strin
 
 function validateNamespace(account : string, contractNamespace: string) : bool {
     let namespaceInfo = Keto.executeQuery(`SELECT ?namespace ?accountHash WHERE {
-        ?subject <http://keto-coin.io/schema/rdf/1.0/keto/Namespace#namespace> '${contractNamespace}'^^<http://www.w3.org/2001/XMLSchema#string> .
-        ?subject <http://keto-coin.io/schema/rdf/1.0/keto/Namespace#accountHash> '${account}'^^<http://www.w3.org/2001/XMLSchema#string> .
+        ?subject <http://keto-coin.io/schema/rdf/1.0/keto/Namespace#namespace> '` + contractNamespace + `'^^<http://www.w3.org/2001/XMLSchema#string> .
+        ?subject <http://keto-coin.io/schema/rdf/1.0/keto/Namespace#accountHash> '` + account + `'^^<http://www.w3.org/2001/XMLSchema#string> .
         ?subject <http://keto-coin.io/schema/rdf/1.0/keto/Namespace#namespace> ?namespace .
         ?subject <http://keto-coin.io/schema/rdf/1.0/keto/Namespace#accountHash> ?accountHash .
         }`, Keto.QUERY_TYPES.REMOTE);

@@ -139,7 +139,7 @@ export function request(): bool {
         while ((row = namespaceInfo.nextRow()) != null) {
             let jsonObj = dataBuilder.add();
             jsonObj.add("accountHash").set(row.getQueryStringByKey("accountHash"));
-            jsonObj.add("account").set(row.getQueryStringByKey("acount"));
+            jsonObj.add("account").set(row.getQueryStringByKey("account"));
             jsonObj.add("key").set(row.getQueryStringByKey("key"));
             jsonObj.add("encrypted").set(row.getQueryStringByKey("encrypted"));
             jsonObj.add("seed").setInt(row.getQueryLongByKey("seed"));
@@ -171,9 +171,9 @@ export function process(): void {
 function copySidechainInfo(transaction : Transaction) : void {
     // copy the contract information
     Keto.log(Keto.LOG_LEVEL.INFO,"[avertem__account_sidechain][copySidechainInfo] execute query");
-    let changeSets = Keto.executeQuery("SELECT ?subject ?predicate ?object WHERE { " +
-        "?subject ?predicate ?object . " +
-    "}");
+    let changeSets = Keto.executeQuery(`SELECT ?subject ?predicate ?object WHERE { 
+        ?subject ?predicate ?object .
+    }`);
 
     Keto.log(Keto.LOG_LEVEL.INFO,"[avertem__account_sidechain][copySidechainInfo] process results");
     let row : ResultRow | null;
