@@ -26,7 +26,7 @@ export function debit(): bool {
 export function credit(): bool {
     let transaction = Keto.transaction();
     if (checkForFeeInfo(transaction)) {
-        Keto.log(Keto.LOG_LEVEL.INFO,"[credit][" + transaction.getAccount() + "] this is a fee transaction and no fee will be deducted");
+        Keto.log(Keto.LOG_LEVEL.INFO,"[credit][" + transaction.getAccount() + "] this is a free transaction and no fee will be deducted");
         transaction.createCreditEntry(transaction.getAccount(),KETO_NAME,"credit the target account with the fee value",Constants.KETO_ACCOUNT_MODEL,Constants.KETO_ACCOUNT_TRANSACTION_MODEL,
                 transaction.getTransactionValue());
     } else {
@@ -34,6 +34,7 @@ export function credit(): bool {
         transaction.createCreditEntry(transaction.getAccount(),KETO_NAME,"credit the target account",Constants.KETO_ACCOUNT_MODEL,Constants.KETO_ACCOUNT_TRANSACTION_MODEL,
                 transaction.getTransactionValue() - transaction.getTotalFeeValue(Constants.KETO_MIMIMIM_FEE));
     }
+    Keto.log(Keto.LOG_LEVEL.INFO,"[credit][" + transaction.getAccount() + "] credit is complete");
     return true;
 }
 
@@ -72,12 +73,12 @@ export function process(): void {
 
 function checkForFeeInfo(transaction : Transaction) : bool {
     // copy the contract information
-    Keto.log(Keto.LOG_LEVEL.INFO,"[avertem_account_contract][copyFeeInfo] execute query");
+    Keto.log(Keto.LOG_LEVEL.INFO,"[avertem_account_contract][checkForFeeInfo] execute query");
     let changeSets = Keto.executeQuery("SELECT ?subject ?predicate ?object WHERE { " +
         "?subject ?predicate ?object . " +
     "}");
 
-    Keto.log(Keto.LOG_LEVEL.INFO,"[avertem_account_contract][copyFeeInfo] process results");
+    Keto.log(Keto.LOG_LEVEL.INFO,"[avertem_account_contract][checkForFeeInfo] process results");
     let row : ResultRow | null;
     while ((row = changeSets.nextRow()) != null) {
         if (checkRdfNode(transaction,row)) {
