@@ -11,7 +11,7 @@ var KETO_NAME: string  = "nested_transaction"
 
 export function debit(): bool {
     let transaction = Keto.transaction();
-    Keto.log(Keto.LOG_LEVEL.DEBUG,"[debit][nested_transaction] fee [" + transaction.getAccount() + "]");
+    //Keto.log(Keto.LOG_LEVEL.DEBUG,"[debit][nested_transaction] fee [" + transaction.getAccount() + "]");
     let changeSets = Keto.executeQuery("SELECT ?id ?changeSetHash ?type ?signature ?transactionHash WHERE { " +
         "?change <http://keto-coin.io/schema/rdf/1.0/keto/ChangeSet#type> 'DEBIT'^^<http://www.w3.org/2001/XMLSchema#string> . " +
         "?change <http://keto-coin.io/schema/rdf/1.0/keto/ChangeSet#id> ?id . " +
@@ -28,7 +28,7 @@ export function debit(): bool {
 
 export function credit(): bool {
     let transaction = Keto.transaction();
-    Keto.log(Keto.LOG_LEVEL.DEBUG,"[credit][nested_transaction] fee [" + transaction.getAccount() + "]");
+    //Keto.log(Keto.LOG_LEVEL.DEBUG,"[credit][nested_transaction] fee [" + transaction.getAccount() + "]");
     let changeSets = Keto.executeQuery("SELECT ?id ?changeSetHash ?type ?signature ?transactionHash WHERE { " +
         "?change <http://keto-coin.io/schema/rdf/1.0/keto/ChangeSet#type> 'CREDIT'^^<http://www.w3.org/2001/XMLSchema#string> . " +
         "?change <http://keto-coin.io/schema/rdf/1.0/keto/ChangeSet#id> ?id . " +

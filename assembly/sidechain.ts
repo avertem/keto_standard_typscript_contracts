@@ -170,12 +170,12 @@ export function process(): void {
 
 function copySidechainInfo(transaction : Transaction) : void {
     // copy the contract information
-    Keto.log(Keto.LOG_LEVEL.INFO,"[avertem__account_sidechain][copySidechainInfo] execute query");
+    //Keto.log(Keto.LOG_LEVEL.DEBUG,"[avertem__account_sidechain][copySidechainInfo] execute query");
     let changeSets = Keto.executeQuery(`SELECT ?subject ?predicate ?object WHERE { 
         ?subject ?predicate ?object .
     }`);
 
-    Keto.log(Keto.LOG_LEVEL.INFO,"[avertem__account_sidechain][copySidechainInfo] process results");
+    //Keto.log(Keto.LOG_LEVEL.DEBUG,"[avertem__account_sidechain][copySidechainInfo] process results");
     let row : ResultRow | null;
     while ((row = changeSets.nextRow()) != null) {
         copyRdfNode(transaction,row);
@@ -213,12 +213,12 @@ function logBadRequest(transaction: Transaction, msg: string = "Unknown error") 
 function createSideChainTransaction(transaction : Transaction, request : SidechainRequest) : void {
 
     // get the transaction value
-    Keto.log(Keto.LOG_LEVEL.INFO,"[avertem__account_sidechain][createSideChainTransaction] create a child transaction");
+    //Keto.log(Keto.LOG_LEVEL.DEBUG,"[avertem__account_sidechain][createSideChainTransaction] create a child transaction");
     let childTransaction = transaction.createChildTransaction();
     childTransaction.setSourceAccount(transaction.getCreditAccount());
     childTransaction.setTargetAccount(transaction.getDebitAccount());
     
-    Keto.log(Keto.LOG_LEVEL.INFO,"[avertem__account_sidechain][createSideChainTransaction] set the values");
+    //Keto.log(Keto.LOG_LEVEL.DEBUG,"[avertem__account_sidechain][createSideChainTransaction] set the values");
     childTransaction.setTransactionValue(TRANSACTION_FEE);
     let nestedTransaction = childTransaction.createNestedTransactionFromParent(request.encrypted,GENESIS);
     nestedTransaction.setSourceAccount(transaction.getCreditAccount());
@@ -227,7 +227,7 @@ function createSideChainTransaction(transaction : Transaction, request : Sidecha
     action.setContract('BC43DA695277D088BDEC03CE1DC58549651B5F3228F62AEEA7EEA7EDD2E2D221');
     let transactionId = transaction.getTransaction();
 
-    Keto.log(Keto.LOG_LEVEL.INFO,"[avertem__account_sidechain][createSideChainTransaction] add the model");
+    //Keto.log(Keto.LOG_LEVEL.DEBUG,"[avertem__account_sidechain][createSideChainTransaction] add the model");
     let subject = NAMESPACE + 'Sidechain/'+transactionId;
     action.setModelStringValue(subject, NAMESPACE + 'id', transactionId);
     action.setModelStringValue(subject, NAMESPACE + 'accountHash', request.owner);
@@ -256,10 +256,10 @@ function createSideChainTransaction(transaction : Transaction, request : Sidecha
     accountAction.setModelStringValue(accountGroupSubject, accountGroupSubject + 'id', request.account);
     accountAction.setModelStringValue(accountGroupSubject, ACCOUNT_NAMESPACE + 'Account', request.account);
 
-    Keto.log(Keto.LOG_LEVEL.INFO,"[avertem__account_sidechain][createSideChainTransaction] submit the transaction");
+    //Keto.log(Keto.LOG_LEVEL.DEBUG,"[avertem__account_sidechain][createSideChainTransaction] submit the transaction");
     childTransaction.submit();
 
-    Keto.log(Keto.LOG_LEVEL.INFO,"[avertem__account_sidechain][createSideChainTransaction] submit the child transaction");
+    //Keto.log(Keto.LOG_LEVEL.DEBUG,"[avertem__account_sidechain][createSideChainTransaction] submit the child transaction");
 }
 
 function getRequest(transaction: Transaction) : SidechainRequest {

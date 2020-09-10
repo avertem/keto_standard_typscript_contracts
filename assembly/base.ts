@@ -11,7 +11,7 @@ const FEE_NAMESPACE : string = "http://keto-coin.io/schema/rdf/1.0/keto/Fee#";
 
 export function debit(): bool {
     let transaction = Keto.transaction();
-    Keto.log(Keto.LOG_LEVEL.DEBUG,"[debit][" + transaction.getAccount() + "]");
+    Keto.log(Keto.LOG_LEVEL.INFO,"[debit][" + transaction.getAccount() + "]");
     
     let accountQuery = new AccountQuery();
     if (accountQuery.getTotal() < transaction.getTransactionValue()) {
@@ -34,7 +34,7 @@ export function credit(): bool {
         transaction.createCreditEntry(transaction.getAccount(),KETO_NAME,"credit the target account",Constants.KETO_ACCOUNT_MODEL,Constants.KETO_ACCOUNT_TRANSACTION_MODEL,
                 transaction.getTransactionValue() - transaction.getTotalFeeValue(Constants.KETO_MIMIMIM_FEE));
     }
-    Keto.log(Keto.LOG_LEVEL.INFO,"[credit][" + transaction.getAccount() + "] credit is complete");
+    //Keto.log(Keto.LOG_LEVEL.DEBUG,"[credit][" + transaction.getAccount() + "] credit is complete");
     return true;
 }
 
@@ -73,12 +73,12 @@ export function process(): void {
 
 function checkForFeeInfo(transaction : Transaction) : bool {
     // copy the contract information
-    Keto.log(Keto.LOG_LEVEL.INFO,"[avertem_account_contract][checkForFeeInfo] execute query");
+    //Keto.log(Keto.LOG_LEVEL.DEBUG,"[avertem_account_contract][checkForFeeInfo] execute query");
     let changeSets = Keto.executeQuery("SELECT ?subject ?predicate ?object WHERE { " +
         "?subject ?predicate ?object . " +
     "}");
 
-    Keto.log(Keto.LOG_LEVEL.INFO,"[avertem_account_contract][checkForFeeInfo] process results");
+    //Keto.log(Keto.LOG_LEVEL.INFO,"[avertem_account_contract][checkForFeeInfo] process results");
     let row : ResultRow | null;
     while ((row = changeSets.nextRow()) != null) {
         if (checkRdfNode(transaction,row)) {

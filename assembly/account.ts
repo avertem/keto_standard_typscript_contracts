@@ -14,18 +14,18 @@ export function debit(): bool {
 export function credit(): bool {
     Keto.log(Keto.LOG_LEVEL.INFO,"[keto_account_management_contract][credit] begin processing");
     let transaction = Keto.transaction();
-    Keto.log(Keto.LOG_LEVEL.INFO,"[keto_account_management_contract][credit] execute query");
+    //Keto.log(Keto.LOG_LEVEL.DEBUG,"[keto_account_management_contract][credit] execute query");
     let changeSets = Keto.executeQuery(`SELECT ?subject ?predicate ?object WHERE { 
         ?subject ?predicate ?object .
     }`);
 
-    Keto.log(Keto.LOG_LEVEL.INFO,"[keto_account_management_contract][credit] process results");
+    //Keto.log(Keto.LOG_LEVEL.DEBUG,"[keto_account_management_contract][credit] process results");
     let row : ResultRow | null;
     while ((row = changeSets.nextRow()) != null) {
         rdfNode(transaction,row)    
     }
 
-    Keto.log(Keto.LOG_LEVEL.INFO,"[keto_account_management_contract][credit] process the account transaction");
+    //Keto.log(Keto.LOG_LEVEL.DEBUG,"[keto_account_management_contract][credit] process the account transaction");
     return true;
 }
 
@@ -38,10 +38,10 @@ export function request(): bool {
     jsonBuilder.add("target").set(httpRequest.getTarget());
     
     if (httpRequest.getTarget() == "account_detail") {
-        Keto.log(Keto.LOG_LEVEL.INFO,"[keto_account_management_contract][request] get account info");
+        //Keto.log(Keto.LOG_LEVEL.DEBUG,"[keto_account_management_contract][request] get account info");
         let account = new AccountInfo();
         //data.add("account").set(account.accountHash)
-        Keto.log(Keto.LOG_LEVEL.INFO,"[keto_account_management_contract][request] add data");
+        //Keto.log(Keto.LOG_LEVEL.DEBUG,"[keto_account_management_contract][request] add data");
         jsonBuilder.add("name").set(account.name);
         jsonBuilder.add("email").set(account.email);
         jsonBuilder.add("email_varified").set(account.email_verified);
@@ -51,10 +51,10 @@ export function request(): bool {
         jsonBuilder.add("status").set(account.status);
         jsonBuilder.add("locale").set("unknown");
 
-        Keto.log(Keto.LOG_LEVEL.INFO,"[keto_account_management_contract][request] set the account details");
+        //Keto.log(Keto.LOG_LEVEL.DEBUG,"[keto_account_management_contract][request] set the account details");
         httpResponse.setBody(jsonBuilder.toJson());
         httpResponse.setContentType("application/javascript");
-        Keto.log(Keto.LOG_LEVEL.INFO,"[keto_account_management_contract][request] after setting the details");
+        //Keto.log(Keto.LOG_LEVEL.DEBUG,"[keto_account_management_contract][request] after setting the details");
     } else {
         // if no account is found we cannot perform a query and return a blank list
         let data = jsonBuilder.addArray("data")
@@ -74,12 +74,12 @@ function rdfNode(transaction: Transaction, row : ResultRow) : void {
     let subject = row.getQueryStringByKey("subject");
     //Keto.log(Keto.LOG_LEVEL.DEBUG,"[keto_account_management_contract][rdfNode] validate [" + row.getQueryStringByKey("subject") + 
     //    "][" + row.getQueryStringByKey("predicate") + 
-    //    "][" + row.getQueryStringByKey("object") + "]");
+    //    "]");
     if (!subject.startsWith("http://keto-coin.io/schema/rdf/1.0/keto/Account#Account/") && !subject.startsWith("http://keto-coin.io/schema/rdf/1.0/keto/AccountGroup#AccountGroup/")) {
         return;
     }
-    Keto.log(Keto.LOG_LEVEL.INFO,"[keto_account_management_contract][rdfNode] copy [" + row.getQueryStringByKey("subject") + 
-        "][" + row.getQueryStringByKey("predicate") + 
-        "][" + row.getQueryStringByKey("object") + "]");
+    //Keto.log(Keto.LOG_LEVEL.DEBUG,"[keto_account_management_contract][rdfNode] copy [" + row.getQueryStringByKey("subject") + 
+    //    "][" + row.getQueryStringByKey("predicate") + 
+    //    "]");
     transaction.addTripleString(row.getQueryStringByKey("subject"), row.getQueryStringByKey("predicate"), row.getQueryStringByKey("object"))
 }

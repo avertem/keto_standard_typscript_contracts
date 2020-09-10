@@ -44,18 +44,18 @@ export function credit(): bool {
         logBadRequest(transaction, validationResult.error )
     } else if (transaction.createCreditEntry(transaction.getAccount(),KETO_NAME,"debit the contract account for the fee",Constants.KETO_ACCOUNT_MODEL,Constants.KETO_ACCOUNT_TRANSACTION_MODEL,CONTRACT_FEE)) {
         // copy the contract information
-        Keto.log(Keto.LOG_LEVEL.INFO,"[avertem__contract_management_contract][credit] execute query");
+        //Keto.log(Keto.LOG_LEVEL.DEBUG,"[avertem__contract_management_contract][credit] execute query");
         let changeSets = Keto.executeQuery(`SELECT ?subject ?predicate ?object WHERE { 
             ?subject ?predicate ?object .
         }`);
 
-        Keto.log(Keto.LOG_LEVEL.INFO,"[avertem__contract_management_contract][credit] process results");
+        //Keto.log(Keto.LOG_LEVEL.DEBUG,"[avertem__contract_management_contract][credit] process results");
         let row : ResultRow | null;
         while ((row = changeSets.nextRow()) != null) {
             copyRdfNode(transaction,row)    
         }
 
-        Keto.log(Keto.LOG_LEVEL.INFO,"[avertem__contract_management_contract][credit] process the account transaction");
+        //Keto.log(Keto.LOG_LEVEL.DEBUG,"[avertem__contract_management_contract][credit] process the account transaction");
     } else {
         logBadRequest(transaction, "Transaction fee is not present" )
     }
@@ -235,13 +235,13 @@ function copyRdfNode(transaction: Transaction, row : ResultRow) : void {
     let subject = row.getQueryStringByKey("subject");
     //Keto.log(Keto.LOG_LEVEL.DEBUG,"[keto_contract_management_contract][rdfNode] validate [" + row.getQueryStringByKey("subject") + 
     //    "][" + row.getQueryStringByKey("predicate") + 
-    //    "][" + row.getQueryStringByKey("object") + "]");
+    //    "]");
     if (!subject.startsWith("http://keto-coin.io/schema/rdf/1.0/keto/Contract#Contract") && !subject.startsWith("http://keto-coin.io/schema/rdf/1.0/keto/ContractVersion#ContractVersion")) {
         return;
     }
-    Keto.log(Keto.LOG_LEVEL.INFO,"[keto_contract_management_contract][rdfNode] copy [" + row.getQueryStringByKey("subject") + 
-        "][" + row.getQueryStringByKey("predicate") + 
-        "][" + row.getQueryStringByKey("object") + "]");
+    //Keto.log(Keto.LOG_LEVEL.DEBUG,"[keto_contract_management_contract][rdfNode] copy [" + row.getQueryStringByKey("subject") + 
+    //    "][" + row.getQueryStringByKey("predicate") + 
+    //    "]");
     transaction.addTripleString(row.getQueryStringByKey("subject"), row.getQueryStringByKey("predicate"), row.getQueryStringByKey("object"))
 }
 

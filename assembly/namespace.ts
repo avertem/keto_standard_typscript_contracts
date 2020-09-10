@@ -31,15 +31,15 @@ export function debit(): bool {
 
     transaction.createDebitEntry(transaction.getAccount(),KETO_NAME,"debit the source for the namespace fee",Constants.KETO_ACCOUNT_MODEL,Constants.KETO_ACCOUNT_TRANSACTION_MODEL,NAMESPACE_FEE);
 
-    Keto.log(Keto.LOG_LEVEL.INFO,"[avertem_namespace_management_contract][debit] create the debit entry for the fee [" + transaction.getAccount() + "]");
+    //Keto.log(Keto.LOG_LEVEL.DEBUG,"[avertem_namespace_management_contract][debit] create the debit entry for the fee [" + transaction.getAccount() + "]");
     return true;
 }
 
 
 export function credit(): bool {
-    Keto.log(Keto.LOG_LEVEL.INFO,"[avertem_namespace_management_contract][credit] started the of the credit method");
+    //Keto.log(Keto.LOG_LEVEL.INFO,"[avertem_namespace_management_contract][credit] started the of the credit method");
     let transaction = Keto.transaction();
-    Keto.log(Keto.LOG_LEVEL.INFO,"[avertem_namespace_management_contract][credit] get the contract");
+    //Keto.log(Keto.LOG_LEVEL.DEBUG,"[avertem_namespace_management_contract][credit] get the contract");
     let contract = Keto.contract();
 
     Keto.log(Keto.LOG_LEVEL.INFO,"[avertem_namespace_management_contract][credit] started the credit [" + transaction.getAccount() + "]");
@@ -50,12 +50,12 @@ export function credit(): bool {
         logBadRequest(transaction, validationResult.error )
     } else if (transaction.createCreditEntry(transaction.getAccount(),KETO_NAME,"credit the namespace account for the fee",Constants.KETO_ACCOUNT_MODEL,Constants.KETO_ACCOUNT_TRANSACTION_MODEL,NAMESPACE_FEE)) {
         // copy the contract information
-        Keto.log(Keto.LOG_LEVEL.INFO,"[avertem__namespace_management_contract][credit] execute query");
+        //Keto.log(Keto.LOG_LEVEL.DEBUG,"[avertem__namespace_management_contract][credit] execute query");
         let changeSets = Keto.executeQuery(`SELECT ?subject ?predicate ?object WHERE {
                 ?subject ?predicate ?object .
             }`);
 
-        Keto.log(Keto.LOG_LEVEL.INFO,"[avertem__namespace_management_contract][credit] copy the provided rows");
+        //Keto.log(Keto.LOG_LEVEL.DEBUG,"[avertem__namespace_management_contract][credit] copy the provided rows");
         let row : ResultRow | null;
         while ((row = changeSets.nextRow()) != null) {
             copyRdfNode(transaction,row)    
@@ -68,15 +68,15 @@ export function credit(): bool {
 
         row = namespaceInfo.nextRow();
         if (row) {
-            Keto.log(Keto.LOG_LEVEL.INFO,"[avertem__namespace_management_contract][credit] add the modifier for : " + row.getQueryStringByKey('id'));    
+            //Keto.log(Keto.LOG_LEVEL.DEBUG,"[avertem__namespace_management_contract][credit] add the modifier for : " + row.getQueryStringByKey('id'));    
             transaction.addTripleString(`http://keto-coin.io/schema/rdf/1.0/keto/Namespace#Namespace/` + row.getQueryStringByKey('id'), "http://keto-coin.io/schema/rdf/1.0/keto/AccountModifier#accountModifier", "PUBLIC");
         }
         
-        Keto.log(Keto.LOG_LEVEL.INFO,"[avertem__namespace_management_contract][credit] process the namespace transaction");
+        //Keto.log(Keto.LOG_LEVEL.DEBUG,"[avertem__namespace_management_contract][credit] process the namespace transaction");
     } else {
         logBadRequest(transaction, "Transaction fee is not present" );
     }
-    Keto.log(Keto.LOG_LEVEL.INFO,"[avertem_namespace_management_contract][credit] finished the credit [" + transaction.getAccount() + "]");
+    //Keto.log(Keto.LOG_LEVEL.DEBUG,"[avertem_namespace_management_contract][credit] finished the credit [" + transaction.getAccount() + "]");
     return true;
 }
 
@@ -223,14 +223,14 @@ function logBadRequest(transaction: Transaction, msg: string = "unknown error") 
         ?subject ?predicate ?object .
     }`);
 
-    Keto.log(Keto.LOG_LEVEL.INFO,"[avertem__namespace_management_contract][credit] copy the provided rows");
+    //Keto.log(Keto.LOG_LEVEL.DEBUG,"[avertem__namespace_management_contract][credit] copy the provided rows");
     let row : ResultRow | null;
     while ((row = changeSets.nextRow()) != null) {
         let subject = row.getQueryStringByKey("subject");
         let predicate = row.getQueryStringByKey("predicate");
         let _object = row.getQueryStringByKey("object");
-        Keto.log(Keto.LOG_LEVEL.INFO,"[avertem_namespace_management_contract][logBadRequest] print the query information [" + subject + 
-            "][" + predicate + 
-            "][" + _object + "]");
+        //Keto.log(Keto.LOG_LEVEL.DEBUG,"[avertem_namespace_management_contract][logBadRequest] print the query information [" + subject + 
+        //    "][" + predicate + 
+        //    "]");
     }
 }

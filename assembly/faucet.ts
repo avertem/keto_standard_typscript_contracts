@@ -13,7 +13,7 @@ var KETO_FAUCET_VALUE : u64 = 1000;
 
 export function debit(): bool {
     let transaction = Keto.transaction();
-    Keto.log(Keto.LOG_LEVEL.DEBUG,"[debit][faucet] debit account [" + transaction.getAccount() + "]");
+    //Keto.log(Keto.LOG_LEVEL.DEBUG,"[debit][faucet] debit account [" + transaction.getAccount() + "]");
 
     // this will result in a retry
     let accountQuery = new AccountQuery();
@@ -30,7 +30,7 @@ export function debit(): bool {
 
 export function credit(): bool {
     let transaction = Keto.transaction();
-    Keto.log(Keto.LOG_LEVEL.DEBUG,"[credit][faucet][" + transaction.getAccount() + "]");
+    //Keto.log(Keto.LOG_LEVEL.DEBUG,"[credit][faucet][" + transaction.getAccount() + "]");
     copyFaucetInfo(transaction);
     transaction.createCreditEntry(transaction.getAccount(),KETO_NAME,"credit the target account with faucet value",Constants.KETO_ACCOUNT_MODEL,Constants.KETO_ACCOUNT_TRANSACTION_MODEL,
         KETO_FAUCET_VALUE);
@@ -51,12 +51,12 @@ export function process(): void {
 
 function copyFaucetInfo(transaction : Transaction) : void {
     // copy the contract information
-    Keto.log(Keto.LOG_LEVEL.INFO,"[avertem_fee_contract][copyFeeInfo] execute query");
+    //Keto.log(Keto.LOG_LEVEL.DEBUG,"[avertem_fee_contract][copyFeeInfo] execute query");
     let changeSets = Keto.executeQuery(`SELECT ?subject ?predicate ?object WHERE {
         ?subject ?predicate ?object . 
     }`);
 
-    Keto.log(Keto.LOG_LEVEL.INFO,"[avertem__account_faucet][copyFeeInfo] process results");
+    //Keto.log(Keto.LOG_LEVEL.DEBUG,"[avertem__account_faucet][copyFeeInfo] process results");
     let row : ResultRow | null;
     while ((row = changeSets.nextRow()) != null) {
         copyRdfNode(transaction,row);
@@ -72,9 +72,9 @@ function copyRdfNode(transaction: Transaction, row : ResultRow) : void {
     if (!subject.startsWith(NAMESPACE)) {
         return;
     }
-    Keto.log(Keto.LOG_LEVEL.INFO,"[avertem__account_faucet][rdfNode] copy [" + row.getQueryStringByKey("subject") + 
-        "][" + row.getQueryStringByKey("predicate") + 
-        "][" + row.getQueryStringByKey("object") + "]");
+    //Keto.log(Keto.LOG_LEVEL.DEBUG,"[avertem__account_faucet][rdfNode] copy [" + row.getQueryStringByKey("subject") + 
+    //    "][" + row.getQueryStringByKey("predicate") + 
+    //    "]");
     transaction.addTripleString(row.getQueryStringByKey("subject"), row.getQueryStringByKey("predicate"), row.getQueryStringByKey("object"))
 }
 
